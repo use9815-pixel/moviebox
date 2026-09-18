@@ -8,38 +8,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ==========================================================================
      DIRECT DOWNLOAD LINKS CONFIGURATION
-     Paste your direct 1-click download URLs below (MediaFire, Google Drive, 
-     Dropbox, Catbox, Archive.org, etc.).
-     Users will NOT be redirected to external websites—downloads start in 1 click!
+     Dropbox, Google Drive, MediaFire, Catbox, or direct server URLs.
      ========================================================================== */
   const DIRECT_DOWNLOAD_LINKS = {
     // App 1: MovieBox Pro Mod 1
-    mod1: "https://www.dropbox.com/scl/fi/0kmr5ilb1odytxfurwm9e/MovieBox-Pro-Mod-1-v4.0.02.0903.02.apk?rlkey=6f8pbqpcgcwg3oldv209aza5t&st=b078b2b9&dl=0", // e.g. "https://drive.google.com/uc?export=download&id=YOUR_FILE_ID" or "https://dl.dropboxusercontent.com/s/..."
+    mod1: "https://www.dropbox.com/scl/fi/0kmr5ilb1odytxfurwm9e/MovieBox-Pro-Mod-1-v4.0.02.0903.02.apk?rlkey=6f8pbqpcgcwg3oldv209aza5t&st=b078b2b9&dl=1",
 
     // App 2: MovieBox Pro Mod 2
-    mod2: "https://www.dropbox.com/scl/fi/h0rwwgem18rvc7x6a0ipq/MovieBox-Pro-Mod-2-v4.0.02.0903.02.apk?rlkey=8qeoavto4jkyycqx8pod8y9vv&st=2jv3iplc&dl=0", // e.g. "https://archive.org/download/your-item/MovieBox_Mod2.apk"
+    mod2: "https://www.dropbox.com/scl/fi/h0rwwgem18rvc7x6a0ipq/MovieBox-Pro-Mod-2-v4.0.02.0903.02.apk?rlkey=8qeoavto4jkyycqx8pod8y9vv&st=2jv3iplc&dl=1",
 
     // App 3: MovieBoxTV Pro
-    tv: "https://www.dropbox.com/scl/fi/f35ilymyqes42bty9rhpk/MovieBoxTV-Pro-v1.1.10.0901.03.apk?rlkey=v39pz7xfaagu9gi3bqzi1g3ml&st=mbdumqd6&dl=0"  // e.g. "https://files.catbox.moe/xxxxxx.apk"
+    tv: "https://www.dropbox.com/scl/fi/f35ilymyqes42bty9rhpk/MovieBoxTV-Pro-v1.1.10.0901.03.apk?rlkey=v39pz7xfaagu9gi3bqzi1g3ml&st=mbdumqd6&dl=1"
   };
 
-  // Apply Direct Download Links to buttons if configured
+  // Convert URLs to 1-click direct download format (e.g. Dropbox dl=0 -> dl=1)
+  function formatDirectUrl(url) {
+    if (!url) return "";
+    let formatted = url.trim();
+    if (formatted.includes("dropbox.com")) {
+      formatted = formatted.replace("dl=0", "dl=1");
+      if (!formatted.includes("dl=1")) {
+        formatted += (formatted.includes("?") ? "&dl=1" : "?dl=1");
+      }
+    }
+    return formatted;
+  }
+
+  // Apply Direct Download Links to buttons
   const mod1Btn = document.getElementById('download-mod1');
   const mod2Btn = document.getElementById('download-mod2');
   const tvBtn = document.getElementById('download-tv');
 
-  if (mod1Btn && DIRECT_DOWNLOAD_LINKS.mod1.trim() !== "") {
-    mod1Btn.href = DIRECT_DOWNLOAD_LINKS.mod1;
-    mod1Btn.removeAttribute('download'); // allow cross-origin direct download
+  if (mod1Btn && DIRECT_DOWNLOAD_LINKS.mod1) {
+    mod1Btn.href = formatDirectUrl(DIRECT_DOWNLOAD_LINKS.mod1);
+    mod1Btn.removeAttribute('download');
   }
 
-  if (mod2Btn && DIRECT_DOWNLOAD_LINKS.mod2.trim() !== "") {
-    mod2Btn.href = DIRECT_DOWNLOAD_LINKS.mod2;
+  if (mod2Btn && DIRECT_DOWNLOAD_LINKS.mod2) {
+    mod2Btn.href = formatDirectUrl(DIRECT_DOWNLOAD_LINKS.mod2);
     mod2Btn.removeAttribute('download');
   }
 
-  if (tvBtn && DIRECT_DOWNLOAD_LINKS.tv.trim() !== "") {
-    tvBtn.href = DIRECT_DOWNLOAD_LINKS.tv;
+  if (tvBtn && DIRECT_DOWNLOAD_LINKS.tv) {
+    tvBtn.href = formatDirectUrl(DIRECT_DOWNLOAD_LINKS.tv);
     tvBtn.removeAttribute('download');
   }
 
@@ -87,9 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Copy Direct Link to Clipboard
   window.copyLink = function (appId, fallbackFilename, appName) {
-    let linkToCopy = DIRECT_DOWNLOAD_LINKS[appId];
+    let linkToCopy = formatDirectUrl(DIRECT_DOWNLOAD_LINKS[appId]);
 
-    if (!linkToCopy || linkToCopy.trim() === "") {
+    if (!linkToCopy) {
       const btn = document.getElementById(`download-${appId}`);
       linkToCopy = btn ? btn.href : new URL(fallbackFilename, window.location.href).href;
     }
